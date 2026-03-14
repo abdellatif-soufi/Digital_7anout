@@ -1,0 +1,208 @@
+/* Container */
+.container {
+  margin-top: 20px;
+  padding: 0 20px 20px;
+}
+
+/* Page Title */
+.page-title {
+  background: linear-gradient(135deg, var(--dark-color) 0%, #495057 100%);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.page-title i {
+  margin-right: 10px;
+}
+
+/* Card Styles */
+.card {
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  border: none;
+  transition: var(--transition);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* Search Bar */
+.search-bar {
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.search-bar .form-label {
+  font-weight: 600;
+  color: var(--dark-color);
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+}
+
+.search-bar .form-control {
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.search-bar .form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.btn-custom {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.btn-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  color: white;
+}
+
+/* Table Card */
+.card h5 {
+  color: var(--dark-color);
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e9ecef;
+  margin-bottom: 20px;
+}
+
+.card h5 i {
+  color: var(--info-color);
+  margin-right: 8px;
+}
+
+/* Table Styles */
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background: linear-gradient(135deg, var(--dark-color) 0%, #495057 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 12px 10px;
+  border: none;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table tbody td {
+  padding: 12px 10px;
+  font-size: 0.85rem;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.table tbody tr {
+  transition: background-color 0.2s;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(40, 167, 69, 0.05);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Button Styles */
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  transition: var(--transition);
+  margin: 0 2px;
+}
+
+.btn-success {
+  background: var(--info-color);
+  border: none;
+}
+
+.btn-success:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+  background: var(--secondary-color);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #17a2b8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Payment Badge */
+.payment-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.payment-especes {
+  background: rgba(40, 167, 69, 0.2);
+  color: var(--primary-color);
+}
+
+.payment-carte {
+  background: rgba(0, 123, 255, 0.2);
+  color: var(--info-color);
+}
+
+/* Amount Highlight */
+.amount-cell {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 10px 10px;
+  }
+
+  .page-title {
+    font-size: 1.1rem;
+    padding: 12px 15px;
+  }
+
+  .table {
+    font-size: 0.75rem;
+  }
+
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+}
