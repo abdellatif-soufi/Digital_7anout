@@ -331,6 +331,7 @@ require_once('db_connection.php');
         const cancelBtn = document.getElementById('cancelBtn');
         const confirmBtn = document.getElementById('confirmBtn');
         let currentQuantity = '0';
+        let barcodeProduct = null;
 
         // Afficher le keypad (bouton "Ajouter")
         addBtn.addEventListener('click', () => {
@@ -432,23 +433,14 @@ require_once('db_connection.php');
                     barcode: currentBarcode
                 },
                 success: function(product) {
+                    barcodeProduct = product;
                     currentQuantity = '1';
-                    document.getElementById('quantityDisplay').textContent = currentQuantity;
-                    document.getElementById('keypadOverlay').classList.add('show');
-                    let quantity = document.getElementById('quantityDisplay');
-                    const qte = parseInt(quantity.textContent);
+                    quantityDisplay.textContent = currentQuantity;
+                    keypadOverlay.classList.add('show');
 
-                    if (isNaN(qte) || qte <= 0) {
-                        alert("❗ Imposible d'ajouter un produit avec une qantite 0");
-                        return;
-                    }
 
-                    confirmBtn.addEventListener('click', () => {
-                        addProductToFacture(product, quantity.textContent);
-                        console.log('Quantity confirmed:', currentQuantity);
-                        keypadOverlay.classList.remove('show');
-                        product = null;
-                    })
+
+
                 }
             });
 
@@ -620,6 +612,20 @@ require_once('db_connection.php');
                 console.log('Quantity confirmed:', currentQuantity);
                 keypadOverlay.classList.remove('show');
                 selectedProduct = null;
+            } else if (barcodeProduct) {
+                let quantity = document.getElementById('quantityDisplay');
+                const qte = parseInt(quantity.textContent);
+
+                if (isNaN(qte) || qte <= 0) {
+                    alert("❗ Imposible d'ajouter un produit avec une qantite 0");
+                    return;
+                }
+
+                addProductToFacture(barcodeProduct, quantity.textContent);
+                console.log('Quantity confirmed:', currentQuantity);
+                keypadOverlay.classList.remove('show');
+                barcodeProduct = null;
+
             }
 
         });
