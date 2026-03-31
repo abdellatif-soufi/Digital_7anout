@@ -772,7 +772,7 @@ require_once('db_connection.php');
 
 
         deleteBtn.addEventListener('click', () => {
-            const selectedRow = factureTbody.querySelector('tr.selected');
+            let selectedRow = factureTbody.querySelector('tr.selected');
             if (!selectedRow) {
                 alert("❗ Veuillez sélectionner une ligne à supprimer !");
                 return;
@@ -785,8 +785,6 @@ require_once('db_connection.php');
 
             totalGlobal = totalGlobal - oldTotal;
             factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
-
-            selectedRow = null;
 
             console.log("✅ Produit supprimé avec succès");
         });
