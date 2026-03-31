@@ -322,79 +322,36 @@ require_once('db_connection.php');
 
     <script>
         // ====================================================================
-        // VARIABLES GLOBALES
+        // 🔢 Keypad quantité
         // ====================================================================
         const keypadOverlay = document.getElementById('keypadOverlay');
         const quantityDisplay = document.getElementById('quantityDisplay');
         const addBtn = document.getElementById('addBtn');
         const editBtn = document.getElementById('editBtn');
-        const deleteBtn = document.getElementById('deleteBtn');
-        const viderBtn = document.getElementById('viderBtn');
         const cancelBtn = document.getElementById('cancelBtn');
         const confirmBtn = document.getElementById('confirmBtn');
-
-        const barcodeKeypadOverlay = document.getElementById('barcodeKeypadOverlay');
-        const barcodeDisplay = document.getElementById('barcodeDisplay');
-        const barcodeCancelBtn = document.getElementById('barcodeCancelBtn');
-        const barcodeConfirmBtn = document.getElementById('barcodeConfirmBtn');
-        const productCodeInput = document.querySelector('input[name="product_code"]');
-
-        const factureTbody = document.getElementById('factureTbody');
-        const factureTotal = document.querySelector('.total-amount');
-
         let currentQuantity = '0';
-        let currentBarcode = '';
-        let totalGlobal = 0;
-        let selectedProduct = null;
-        let currentAction = null; // 'add', 'edit', 'barcode'
-        let currentRow = null; // Pour stocker la ligne en cours d'édition
 
-        // Navigation
-        let currentView = 'categories';
-        let selectedCategory = null;
-        let selectedBrand = null;
-        let categoriesData = [];
-        let brandsData = [];
-
-        // ====================================================================
-        // 🔢 GESTION KEYPAD QUANTITÉ
-        // ====================================================================
-
-        // Afficher le keypad
-        function showQuantityKeypad(quantity = '1', action = 'add', row = null) {
-            currentQuantity = quantity;
-            currentAction = action;
-            currentRow = row;
-            quantityDisplay.textContent = currentQuantity;
-            keypadOverlay.classList.add('show');
-        }
-
-        // Masquer le keypad
-        function hideQuantityKeypad() {
-            keypadOverlay.classList.remove('show');
-            currentAction = null;
-            currentRow = null;
-            selectedProduct = null;
-        }
-
-        // Bouton "Ajouter" - Ouvre le barcode keypad
+        // Afficher le keypad (bouton "Ajouter")
         addBtn.addEventListener('click', () => {
-            currentBarcode = '';
-            barcodeDisplay.textContent = '';
+            currentQuantity = '0';
+            quantityDisplay.textContent = currentQuantity;
             barcodeKeypadOverlay.classList.add('show');
         });
 
-        // Bouton "Annuler" du keypad quantité
-        cancelBtn.addEventListener('click', hideQuantityKeypad);
+        // Masquer le keypad (bouton "Annuler")
+        cancelBtn.addEventListener('click', () => {
+            keypadOverlay.classList.remove('show');
+        });
 
-        // Clic à l'extérieur du keypad quantité
+        // Masquer le keypad en cliquant à l'extérieur
         keypadOverlay.addEventListener('click', (e) => {
             if (e.target === keypadOverlay) {
-                hideQuantityKeypad();
+                keypadOverlay.classList.remove('show');
             }
         });
 
-        // Gestion des boutons du keypad quantité
+        // Gérer les clics sur les boutons du keypad
         document.querySelectorAll('.keypad-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 if (btn.dataset.number) {
@@ -414,54 +371,42 @@ require_once('db_connection.php');
                 }
             });
         });
-        // Bouton "Confirmer" du keypad quantité
-        confirmBtn.addEventListener('click', () => {
-            const qte = parseInt(currentQuantity);
-
-            if (isNaN(qte) || qte <= 0) {
-                alert("❗ Impossible d'entrer une quantité inférieure ou égale à 0");
-                return;
-            }
-
-            if (currentAction === 'add') {
-                addProductToFacture(selectedProduct, qte);
-            } else if (currentAction === 'edit') {
-                updateProductQuantity(currentRow, qte);
-            } else if (currentAction === 'barcode') {
-                addProductToFacture(selectedProduct, qte);
-            }
-
-            hideQuantityKeypad();
-        });
 
         // ====================================================================
-        // 📱 GESTION KEYPAD CODE-BARRES
+        // 📱 Keypad Code-barres
         // ====================================================================
+        const barcodeKeypadOverlay = document.getElementById('barcodeKeypadOverlay');
+        const barcodeDisplay = document.getElementById('barcodeDisplay');
+        const barcodeCancelBtn = document.getElementById('barcodeCancelBtn');
+        const barcodeConfirmBtn = document.getElementById('barcodeConfirmBtn');
+        const productCodeInput = document.querySelector('input[name="product_code"]');
+        let currentBarcode = '';
 
-        // Afficher le keypad barcode
+
+        // Afficher le keypad du code-barres lors du clic sur l'input
         productCodeInput.addEventListener('click', () => {
             currentBarcode = productCodeInput.value || '';
             barcodeDisplay.textContent = currentBarcode;
             barcodeKeypadOverlay.classList.add('show');
         });
 
-        // Masquer le keypad barcode
+        // Masquer le keypad du code-barres (bouton "Annuler")
         barcodeCancelBtn.addEventListener('click', () => {
             barcodeKeypadOverlay.classList.remove('show');
         });
 
-        // Clic à l'extérieur du keypad barcode
+        // Masquer le keypad du code-barres en cliquant à l'extérieur
         barcodeKeypadOverlay.addEventListener('click', (e) => {
             if (e.target === barcodeKeypadOverlay) {
                 barcodeKeypadOverlay.classList.remove('show');
             }
         });
 
-        // Gestion des boutons du keypad barcode
+        // Gérer les boutons du keypad du code-barres
         document.querySelectorAll('.barcode-keypad-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 if (btn.dataset.number) {
-                    if (currentBarcode.length < 13) {
+                    if (currentBarcode.length < 13) { // longueur max du code-barres
                         currentBarcode += btn.dataset.number;
                     }
                     barcodeDisplay.textContent = currentBarcode;
@@ -474,13 +419,8 @@ require_once('db_connection.php');
             });
         });
 
-        // Bouton "Rechercher" du keypad barcode
+        // Bouton de confirmation du code-barres
         barcodeConfirmBtn.addEventListener('click', () => {
-            if (!currentBarcode) {
-                alert("❗ Veuillez entrer un code produit");
-                return;
-            }
-
             productCodeInput.value = currentBarcode;
             barcodeKeypadOverlay.classList.remove('show');
 
@@ -492,190 +432,41 @@ require_once('db_connection.php');
                     barcode: currentBarcode
                 },
                 success: function(product) {
-                    if (product && product.id) {
-                        selectedProduct = product;
-                        showQuantityKeypad('1', 'barcode');
-                    } else {
-                        alert("❗ Produit introuvable avec ce code");
+                    currentQuantity = '1';
+                    document.getElementById('quantityDisplay').textContent = currentQuantity;
+                    document.getElementById('keypadOverlay').classList.add('show');
+                    let quantity = document.getElementById('quantityDisplay');
+                    const qte = parseInt(quantity.textContent);
+
+                    if (isNaN(qte) || qte <= 0) {
+                        alert("❗ Imposible d'ajouter un produit avec une qantite 0");
+                        return;
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Erreur AJAX:", error);
-                    alert("❌ Erreur lors de la recherche du produit");
+
+                    confirmBtn.addEventListener('click', () => {
+                        addProductToFacture(product, quantity.textContent);
+                        console.log('Quantity confirmed:', currentQuantity);
+                        keypadOverlay.classList.remove('show');
+                        product = null;
+                    })
                 }
             });
+
         });
 
         // ====================================================================
-        // 🧾 GESTION DE LA FACTURE
+        // 📦 Fonctions de navigation
         // ====================================================================
 
-        // Vérifier si le produit existe déjà dans la facture
-        function findProductInFacture(productId) {
-            let foundRow = null;
-            factureTbody.querySelectorAll("tr").forEach(tr => {
-                const id = parseInt(tr.children[0].textContent);
-                if (id === productId) {
-                    foundRow = tr;
-                }
-            });
-            return foundRow;
-        }
+        let currentView = 'categories';
+        let selectedCategory = null;
+        let selectedBrand = null;
+        let categoriesData = [];
+        let brandsData = [];
 
-        // Ajouter un produit à la facture
-        function addProductToFacture(product, quantity) {
-            if (!product || !product.id) {
-                alert("❗ Produit invalide");
-                return;
-            }
-
-            const existingRow = findProductInFacture(product.id);
-
-            if (existingRow) {
-                // Le produit existe déjà, on ajoute la quantité
-                const quantityCell = existingRow.children[3];
-                const totalCell = existingRow.children[4];
-                const price = parseFloat(product.selling_price);
-
-                const oldQuantity = parseInt(quantityCell.textContent);
-                const newQuantity = oldQuantity + quantity;
-                const oldTotal = parseFloat(totalCell.textContent);
-                const newTotal = price * newQuantity;
-
-                quantityCell.textContent = newQuantity;
-                totalCell.textContent = newTotal.toFixed(2);
-
-                totalGlobal = totalGlobal - oldTotal + newTotal;
-            } else {
-                // Nouveau produit
-                const total = product.selling_price * quantity;
-                const row = document.createElement('tr');
-                row.innerHTML = `
-          <td style="display:none;">${product.id}</td>
-          <td>${product.name}</td>
-          <td>${parseFloat(product.selling_price).toFixed(2)}</td>
-          <td>${quantity}</td>
-          <td>${total.toFixed(2)}</td>
-      `;
-                factureTbody.appendChild(row);
-                totalGlobal += total;
-            }
-
-            updateTotalDisplay();
-            console.log("✅ Produit ajouté/mis à jour dans la facture");
-        }
-
-        // Mettre à jour la quantité d'un produit
-        function updateProductQuantity(row, newQuantity) {
-            if (!row) return;
-
-            const priceCell = row.children[2];
-            const quantityCell = row.children[3];
-            const totalCell = row.children[4];
-
-            const price = parseFloat(priceCell.textContent);
-            const oldTotal = parseFloat(totalCell.textContent);
-            const newTotal = price * newQuantity;
-
-            quantityCell.textContent = newQuantity;
-            totalCell.textContent = newTotal.toFixed(2);
-
-            totalGlobal = totalGlobal - oldTotal + newTotal;
-            updateTotalDisplay();
-
-            console.log("✅ Quantité mise à jour");
-        }
-
-        // Mettre à jour l'affichage du total
-        function updateTotalDisplay() {
-            if (factureTotal) {
-                factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
-            }
-        }
-
-        // ====================================================================
-        // 🎯 SÉLECTION DE LIGNE DANS LA FACTURE
-        // ====================================================================
-
-        // Sélectionner une ligne (clic simple)
-        factureTbody.addEventListener('click', (e) => {
-            const row = e.target.closest('tr');
-            if (row) {
-                factureTbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
-                row.classList.add('selected');
-            }
-        });
-
-        // Désélectionner une ligne (double-clic)
-        factureTbody.addEventListener('dblclick', (e) => {
-            const row = e.target.closest('tr');
-            if (row) {
-                row.classList.remove('selected');
-            }
-        });
-
-        // ====================================================================
-        // ✏️ MODIFIER LA QUANTITÉ
-        // ====================================================================
-
-        editBtn.addEventListener('click', () => {
-            const selectedRow = factureTbody.querySelector('tr.selected');
-            if (!selectedRow) {
-                alert("❗ Veuillez sélectionner une ligne à modifier");
-                return;
-            }
-
-            const currentQty = selectedRow.children[3].textContent;
-            showQuantityKeypad(currentQty, 'edit', selectedRow);
-        });
-
-        // ====================================================================
-        // 🗑️ SUPPRIMER UN PRODUIT
-        // ====================================================================
-
-        deleteBtn.addEventListener('click', () => {
-            const selectedRow = factureTbody.querySelector('tr.selected');
-            if (!selectedRow) {
-                alert("❗ Veuillez sélectionner une ligne à supprimer");
-                return;
-            }
-
-            const totalCell = selectedRow.children[4];
-            const rowTotal = parseFloat(totalCell.textContent);
-
-            selectedRow.remove();
-
-            totalGlobal -= rowTotal;
-            updateTotalDisplay();
-
-            console.log("✅ Produit supprimé");
-        });
-
-        // ====================================================================
-        // 🧹 VIDER LA FACTURE
-        // ====================================================================
-
-        viderBtn.addEventListener('click', () => {
-            if (factureTbody.children.length === 0) {
-                alert("❗ La facture est déjà vide");
-                return;
-            }
-
-            const confirmation = confirm("🗑️ Êtes-vous sûr de vouloir vider toute la facture ?");
-            if (!confirmation) return;
-
-            factureTbody.innerHTML = '';
-            totalGlobal = 0;
-            updateTotalDisplay();
-
-            console.log("✅ Facture vidée");
-        });
-
-        // ====================================================================
-        // 📦 NAVIGATION - CATÉGORIES
-        // ====================================================================
 
         function showCategories() {
+
             currentView = 'categories';
             updateBreadcrumb();
             const grid = document.getElementById('dynamicGrid');
@@ -685,7 +476,7 @@ require_once('db_connection.php');
                 method: "POST",
                 url: "./AJAX/categorie_ajax.php",
                 dataType: "json",
-                success: function(categories) {
+                success: function(categories, a, b) {
                     categoriesData = categories;
                     categories.forEach(category => {
                         const categoryCard = createCategoryCard(category);
@@ -693,30 +484,12 @@ require_once('db_connection.php');
                     });
                 },
                 error: function(xhr, status, error) {
-                    console.error("Erreur catégories:", error);
-                    alert("❌ Erreur lors du chargement des catégories");
+                    console.log("Error : ", error);
                 }
             });
         }
 
-        function createCategoryCard(category) {
-            const card = document.createElement('div');
-            card.className = 'product-card category-card';
-            card.innerHTML = `
-      <div class="product-image">
-          <img src="../categories-img/${category.image}" 
-               alt="${category.name}" 
-               onerror="this.style.display='none'">
-      </div>
-      <div class="product-name">${category.name}</div>
-  `;
-            card.addEventListener('click', () => showBrands(category.id));
-            return card;
-        }
 
-        // ====================================================================
-        // 🏷️ NAVIGATION - MARQUES
-        // ====================================================================
 
         function showBrands(categoryId) {
             currentView = 'brands';
@@ -733,6 +506,7 @@ require_once('db_connection.php');
                 },
                 dataType: "json",
                 success: function(brands) {
+                    console.log(brands);
                     brandsData = brands;
                     brands.forEach(brand => {
                         const brandCard = createBrandCard(brand);
@@ -740,30 +514,12 @@ require_once('db_connection.php');
                     });
                 },
                 error: function(xhr, status, error) {
-                    console.error("Erreur marques:", error);
-                    alert("❌ Erreur lors du chargement des marques");
+                    console.log("Error: ", error);
+                    console.log("Response: ", xhr.responseText);
                 }
             });
         }
 
-        function createBrandCard(brand) {
-            const card = document.createElement('div');
-            card.className = 'product-card brand-card';
-            card.innerHTML = `
-      <div class="product-image">
-          <img src="../imgs/brands-img/${brand.name.toLowerCase()}.png" 
-               alt="${brand.name}" 
-               onerror="this.style.display='none'">
-      </div>
-      <div class="product-name">${brand.name}</div>
-  `;
-            card.addEventListener('click', () => showProducts(brand.id));
-            return card;
-        }
-
-        // ====================================================================
-        // 🛍️ NAVIGATION - PRODUITS
-        // ====================================================================
 
         function showProducts(brandId) {
             currentView = 'products';
@@ -771,7 +527,6 @@ require_once('db_connection.php');
             updateBreadcrumb();
             const grid = document.getElementById('dynamicGrid');
             grid.innerHTML = '';
-
             $.ajax({
                 method: "POST",
                 url: "./AJAX/products_ajax.php",
@@ -786,37 +541,272 @@ require_once('db_connection.php');
                     });
                 },
                 error: function(xhr, status, error) {
-                    console.error("Erreur produits:", error);
-                    alert("❌ Erreur lors du chargement des produits");
+                    console.log("Error: ", error);
+                    console.log("Response: ", xhr.responseText);
                 }
             });
         }
+
+        // ====================================================================
+        // 🧱 Création des cartes
+        // ====================================================================
+        function createCategoryCard(category) {
+            const card = document.createElement('div');
+            card.className = 'product-card category-card';
+            card.innerHTML = `
+             <div class="product-image">
+                 <img src="../categories-img/${category.image}" 
+                 alt="${category.name}" 
+                 onerror="this.style.display='none'">
+             </div>
+             <div class="product-name">${category.name}</div>
+         `;
+            card.addEventListener('click', () => showBrands(category.id));
+            return card;
+        }
+
+        function createBrandCard(brand) {
+            const card = document.createElement('div');
+            card.className = 'product-card brand-card';
+            card.innerHTML = `
+             <div class="product-image">
+                 <img src="../imgs/brands-img/${brand.name.toLowerCase()}.png" alt="${brand.name}" onerror="this.style.display='none'">
+             </div>
+             <div class="product-name">${brand.name}</div>
+         `;
+            card.addEventListener('click', () => showProducts(brand.id));
+            return card;
+        }
+
+        // ====================================================================
+        // 🧾 Produits + Facture
+        // ====================================================================
+        let selectedProduct = null;
+
 
         function createProductCard(product) {
             const card = document.createElement('div');
             card.className = 'product-card';
             card.innerHTML = `
-      <div class="product-image">
-          <img src="../products-img/${product.image}" 
-               alt="${product.name}" 
-               onerror="this.style.display='none'">
-      </div>
-      <div class="product-name">${product.name}</div>
-      <div class="product-price">${product.selling_price} DH</div>
-  `;
+             <div class="product-image">
+                 <img src="../products-img/${product.image}" alt="${product.name}" onerror="this.style.display='none'">
+             </div>
+             <div class="product-name">${product.name}</div>
+             <div class="product-price">${product.selling_price} DH</div>
+         `;
 
             card.addEventListener('click', () => {
+                console.log('Produit sélectionné:', product);
                 selectedProduct = product;
-                showQuantityKeypad('1', 'add');
-            });
+                currentQuantity = '1';
+                document.getElementById('quantityDisplay').textContent = currentQuantity;
+                document.getElementById('keypadOverlay').classList.add('show');
 
+            });
             return card;
         }
 
-        // ====================================================================
-        // 🧭 BREADCRUMB
-        // ====================================================================
+        confirmBtn.addEventListener('click', () => {
+            if (selectedProduct) {
+                let quantity = document.getElementById('quantityDisplay');
+                const qte = parseInt(quantity.textContent);
 
+                if (isNaN(qte) || qte <= 0) {
+                    alert("❗ Imposible d'ajouter un produit avec une qantite 0");
+                    return;
+                }
+
+                addProductToFacture(selectedProduct, quantity.textContent);
+                console.log('Quantity confirmed:', currentQuantity);
+                keypadOverlay.classList.remove('show');
+                selectedProduct = null;
+            }
+
+        });
+
+        const factureTbody = document.getElementById('factureTbody');
+        const factureTotal = document.querySelector('.total-amount');
+        let totalGlobal = 0;
+
+        function addQuantity(selectedRow) {
+            console.log(selectedRow);
+            const priceCell = selectedRow.children[2];
+            const quantityCell = selectedRow.children[3];
+            const totalCell = selectedRow.children[4];
+
+            const oldQuantity = parseInt(quantityCell.textContent);
+            const price = parseFloat(priceCell.textContent);
+
+            let currentQuantity = oldQuantity.toString();
+            quantityDisplay.textContent = currentQuantity;
+            keypadOverlay.classList.add('show');
+
+            confirmBtn.addEventListener('click', () => {
+                if (parseInt(currentQuantity) <= 0 || isNaN(parseInt(currentQuantity))) {
+                    alert("imposible d'entrer une quantite inferieur de 0.");
+                    return;
+                }
+
+                let newQuantity = parseInt(quantityDisplay.textContent) + oldQuantity;
+                console.log(newQuantity);
+                quantityCell.textContent = newQuantity.toString();
+
+
+                let oldTotalCell = parseInt(totalCell.textContent);
+                let newTotalCell = price * newQuantity;
+                totalCell.textContent = newTotalCell.toFixed(2);
+
+                keypadOverlay.classList.remove('show');
+
+
+                selectedRow = null;
+            });
+        }
+
+        function ifProductExistInFacture(NewIdProduct) {
+            let trSelected = null;
+            let idProduct;
+            factureTbody.querySelectorAll("tr").forEach(tr => {
+                idProduct = parseInt(tr.children[0].textContent);
+                console.log(idProduct);
+                if (idProduct === NewIdProduct)
+                    trSelected = tr;
+            })
+
+            return trSelected;
+        };
+
+
+        function addProductToFacture(product, quantity) {
+            let idProduct = product.id;
+            const total = product.selling_price * parseInt(quantity);
+            const row = document.createElement('tr');
+            console.log(ifProductExistInFacture(idProduct));
+            if (factureTbody.innerHTML.trim() === "" || ifProductExistInFacture(idProduct) === null) {
+                row.innerHTML = `
+                 <td style="display:none;">${product.id}</td>
+                 <td>${product.name}</td>
+                 <td>${parseFloat(product.selling_price).toFixed(2)}</td>
+                 <td>${quantity}</td>
+                 <td>${total.toFixed(2)}</td>
+                 `;
+                factureTbody.appendChild(row);
+            } else {
+                console.log(idProduct);
+                let productSelected = ifProductExistInFacture(idProduct);
+                console.log(productSelected);
+                addQuantity(productSelected);
+            }
+
+
+            totalGlobal += total;
+            if (factureTotal) factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
+        };
+
+        function editQuantityProduct(selectedRow) {
+            console.log(selectedRow);
+            const priceCell = selectedRow.children[2];
+            const quantityCell = selectedRow.children[3];
+            const totalCell = selectedRow.children[4];
+
+            const oldQuantity = parseInt(quantityCell.textContent);
+            const price = parseFloat(priceCell.textContent);
+
+            let currentQuantity = oldQuantity.toString();
+            quantityDisplay.textContent = currentQuantity;
+            keypadOverlay.classList.add('show');
+
+            confirmBtn.addEventListener('click', () => {
+                if (parseInt(currentQuantity) <= 0 || isNaN(parseInt(currentQuantity))) {
+                    alert("imposible d'entrer une quantite inferieur de 0.");
+                    return;
+                }
+
+                let newQuantity = quantityDisplay.textContent;
+                quantityCell.textContent = newQuantity;
+
+
+                let oldTotalCell = parseInt(totalCell.textContent);
+                let newTotalCell = price * parseInt(newQuantity);
+                totalCell.textContent = newTotalCell.toFixed(2);
+
+                keypadOverlay.classList.remove('show');
+
+                totalGlobal = totalGlobal - oldTotalCell + newTotalCell;
+                factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
+
+                selectedRow = null;
+            });
+        };
+
+        editBtn.addEventListener('click', () => {
+            const selectedRow = factureTbody.querySelector('tr.selected');
+            if (!selectedRow) {
+                alert("Veuillez sélectionner une ligne à modifier !");
+                return;
+            }
+            editQuantityProduct(selectedRow);
+        });
+
+        factureTbody.addEventListener('click', (e) => {
+            if (e.target.closest('tr')) {
+                const selectedRow = e.target.closest('tr');
+                if (!selectedRow) return;
+                factureTbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
+                selectedRow.classList.add('selected');
+            }
+        });
+
+        factureTbody.addEventListener('dblclick', (e) => {
+            if (e.target.closest('tr')) {
+                const selectedRow = e.target.closest('tr');
+                selectedRow.classList.remove('selected');
+            }
+        });
+
+
+        deleteBtn.addEventListener('click', () => {
+            const selectedRow = factureTbody.querySelector('tr.selected');
+            if (!selectedRow) {
+                alert("❗ Veuillez sélectionner une ligne à supprimer !");
+                return;
+            }
+
+            const totalCell = selectedRow.children[3];
+            const oldTotal = parseFloat(totalCell.textContent);
+
+            selectedRow.remove();
+
+            totalGlobal = totalGlobal - oldTotal;
+            factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
+
+            selectedRow = null;
+
+            console.log("✅ Produit supprimé avec succès");
+        });
+
+
+        viderBtn.addEventListener('click', () => {
+            if (factureTbody.children.length === 0) {
+                alert("❗ La facture est déjà vide !");
+                return;
+            }
+
+            const confirmation = confirm("🗑️ Êtes-vous sûr de vouloir vider toute la facture ?");
+            if (!confirmation) return;
+
+            factureTbody.innerHTML = '';
+
+            totalGlobal = 0;
+            factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
+
+            console.log("✅ Facture vidée avec succès");
+        });
+
+
+        // ====================================================================
+        // 🧭 Breadcrumb Navigation
+        // ====================================================================
         function updateBreadcrumb() {
             const navHome = document.getElementById('navHome');
             const navSep1 = document.getElementById('navSep1');
@@ -827,10 +817,11 @@ require_once('db_connection.php');
             const navBrandName = document.getElementById('navBrandName');
             const backBtn = document.getElementById('navBackBtn');
 
-            [navSep1, navCategory, navSep2, navBrand].forEach(el => el.style.display = 'none');
-            backBtn.style.display = 'none';
+            [navSep1, navCategory, navSep2, navBrand, backBtn].forEach(el => el.style.display = 'none');
 
-            if (currentView === 'brands') {
+            if (currentView === 'categories') {
+                backBtn.style.display = 'none';
+            } else if (currentView === 'brands') {
                 navSep1.style.display = 'inline';
                 navCategory.style.display = 'inline';
                 navCategoryName.textContent = selectedCategory.name;
@@ -846,25 +837,21 @@ require_once('db_connection.php');
             }
         }
 
+        // ====================================================================
+        // 🚀 Initialisation
+        // ====================================================================
         document.getElementById('navHome').addEventListener('click', showCategories);
         document.getElementById('navCategory').addEventListener('click', () => {
             if (selectedCategory) showBrands(selectedCategory.id);
         });
         document.getElementById('navBackBtn').addEventListener('click', () => {
-            if (currentView === 'brands') {
-                showCategories();
-            } else if (currentView === 'products') {
-                showBrands(selectedCategory.id);
-            }
+            if (currentView === 'brands') showCategories();
+            else if (currentView === 'products') showBrands(selectedCategory.id);
         });
+        document.addEventListener('DOMContentLoaded', showCategories);
 
-        // ====================================================================
-        // ✅ FINALISER LA VENTE (Sans Bootstrap)
-        // ====================================================================
 
         const btnComplete = document.querySelector('.btn-complete');
-        const invoiceModal = document.getElementById('invoiceModal');
-
         if (btnComplete) {
             btnComplete.addEventListener('click', () => {
                 if (factureTbody.children.length === 0) {
@@ -872,12 +859,10 @@ require_once('db_connection.php');
                     return;
                 }
 
-                // Mise à jour de la date
                 const now = new Date();
                 document.getElementById('invoiceDate').textContent =
                     now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR');
 
-                // Remplir le tableau de la facture
                 const invoiceTable = document.getElementById('invoiceProductsTable');
                 invoiceTable.innerHTML = '';
                 factureTbody.querySelectorAll('tr').forEach(row => {
@@ -887,54 +872,24 @@ require_once('db_connection.php');
                     invoiceTable.appendChild(newRow);
                 });
 
-                document.getElementById('invoiceTotalAmount').textContent = totalGlobal.toFixed(2);
+                document.getElementById('invoiceTotalAmount').textContent =
+                    factureTotal.textContent.replace(' DH', '');
 
-                // Afficher le modal (sans Bootstrap)
-                invoiceModal.style.display = 'flex';
+                const modal = new bootstrap.Modal(document.getElementById('invoiceModal'));
+                modal.show();
             });
         }
 
-        // Fermer le modal avec le bouton X
-        const closeModalBtn = invoiceModal?.querySelector('.btn-close');
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', () => {
-                invoiceModal.style.display = 'none';
-            });
-        }
-
-        // Fermer le modal en cliquant à l'extérieur
-        if (invoiceModal) {
-            invoiceModal.addEventListener('click', (e) => {
-                if (e.target === invoiceModal) {
-                    invoiceModal.style.display = 'none';
-                }
-            });
-        }
-
-        // Bouton "Terminer"
         const finishSaleBtnEl = document.getElementById('finishSaleBtn');
         if (finishSaleBtnEl) {
             finishSaleBtnEl.addEventListener('click', () => {
-                // Vider la facture
                 factureTbody.innerHTML = '';
                 totalGlobal = 0;
-                updateTotalDisplay();
-
-                // Fermer le modal
-                invoiceModal.style.display = 'none';
-
+                factureTotal.textContent = '0.00 DH';
+                bootstrap.Modal.getInstance(document.getElementById('invoiceModal')).hide();
                 alert("✅ Vente terminée avec succès !");
             });
         }
-
-        // ====================================================================
-        // 🚀 INITIALISATION
-        // ====================================================================
-
-        document.addEventListener('DOMContentLoaded', () => {
-            showCategories();
-            console.log("✅ Système POS initialisé");
-        });
     </script>
 
 </body>
