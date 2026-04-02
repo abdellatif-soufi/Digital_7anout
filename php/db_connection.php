@@ -1,14 +1,23 @@
 <?php
-$dsn = 'mysql:host=localhost;dbname=grocery';
-$servername = "localhost";
+$servername = "db";
 $username = "root";
-$password = "";
+$password = "rootpassword";
 $dbname = "grocery";
 
- try {
-        $pdo = new PDO($dsn,$username,$password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
+$maxRetries = 5;
+$retries = 0;
+
+while ($retries < $maxRetries) {
+    try {
+        $dsn = "mysql:host=$servername;dbname=$dbname;charset=utf8";
+        $pdo = new PDO($dsn, $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        break; // تصل بنجاح
     } catch (PDOException $e) {
-        die("Connection failed: " . $e->getMessage());
+        $retries++;
+        sleep(2); // انتظر 2 ثواني
+        if ($retries >= $maxRetries) {
+            die("Connection failed: " . $e->getMessage());
+        }
     }
-?>
+}

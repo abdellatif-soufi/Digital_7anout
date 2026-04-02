@@ -332,6 +332,7 @@ require_once('db_connection.php');
         const confirmBtn = document.getElementById('confirmBtn');
         let currentQuantity = '0';
         let barcodeProduct = null;
+        let rowToAddQuantity = null;
 
         // Afficher le keypad (bouton "Ajouter")
         addBtn.addEventListener('click', () => {
@@ -599,6 +600,9 @@ require_once('db_connection.php');
         }
 
         confirmBtn.addEventListener('click', () => {
+            console.log('selectedProduct:', selectedProduct);
+            console.log('barcodeProduct:', barcodeProduct);
+            console.log('rowToAddQuantity:', rowToAddQuantity);
             if (selectedProduct) {
                 let quantity = document.getElementById('quantityDisplay');
                 const qte = parseInt(quantity.textContent);
@@ -609,9 +613,9 @@ require_once('db_connection.php');
                 }
 
                 addProductToFacture(selectedProduct, quantity.textContent);
-                console.log('Quantity confirmed:', currentQuantity);
                 keypadOverlay.classList.remove('show');
                 selectedProduct = null;
+
             } else if (barcodeProduct) {
                 let quantity = document.getElementById('quantityDisplay');
                 const qte = parseInt(quantity.textContent);
@@ -622,40 +626,25 @@ require_once('db_connection.php');
                 }
 
                 addProductToFacture(barcodeProduct, quantity.textContent);
-                console.log('Quantity confirmed:', currentQuantity);
                 keypadOverlay.classList.remove('show');
                 barcodeProduct = null;
 
-            }
+            } else if (rowToAddQuantity) {
+                console.log("rowToAddQuantity");
+                const priceCell = rowToAddQuantity.children[2];
+                const quantityCell = rowToAddQuantity.children[3];
+                const totalCell = rowToAddQuantity.children[4];
 
-        });
-
-        const factureTbody = document.getElementById('factureTbody');
-        const factureTotal = document.querySelector('.total-amount');
-        let totalGlobal = 0;
-
-        function addQuantity(selectedRow) {
-            console.log(selectedRow);
-            const priceCell = selectedRow.children[2];
-            const quantityCell = selectedRow.children[3];
-            const totalCell = selectedRow.children[4];
-
-            const oldQuantity = parseInt(quantityCell.textContent);
-            const price = parseFloat(priceCell.textContent);
-
-            let currentQuantity = oldQuantity.toString();
-            quantityDisplay.textContent = currentQuantity;
-            keypadOverlay.classList.add('show');
-
-            confirmBtn.addEventListener('click', () => {
-                if (parseInt(currentQuantity) <= 0 || isNaN(parseInt(currentQuantity))) {
-                    alert("imposible d'entrer une quantite inferieur de 0.");
-                    return;
-                }
+                const oldQuantity = parseInt(quantityCell.textContent);
+                const price = parseFloat(priceCell.textContent);
 
                 let newQuantity = parseInt(quantityDisplay.textContent) + oldQuantity;
-                console.log(newQuantity);
                 quantityCell.textContent = newQuantity.toString();
+
+                console.log('price:', priceCell.textContent); // تحقق
+                console.log('quantity:', quantityCell.textContent); // تحقق
+                console.log('total:', totalCell.textContent); // تحقق
+
 
 
                 let oldTotalCell = parseInt(totalCell.textContent);
@@ -663,10 +652,22 @@ require_once('db_connection.php');
                 totalCell.textContent = newTotalCell.toFixed(2);
 
                 keypadOverlay.classList.remove('show');
+                rowToAddQuantity = null;
+            }
+        });
+
+        const factureTbody = document.getElementById('factureTbody');
+        const factureTotal = document.querySelector('.total-amount');
+        let totalGlobal = 0;
 
 
-                selectedRow = null;
-            });
+        function addQuantity(product) {
+            rowToAddQuantity = product;
+            selectedProduct = null;
+            barcodeProduct = null;
+            currentQuantity = '1';
+            quantityDisplay.textContent = currentQuantity;
+            keypadOverlay.classList.add("show");
         }
 
         function ifProductExistInFacture(NewIdProduct) {
@@ -674,7 +675,7 @@ require_once('db_connection.php');
             let idProduct;
             factureTbody.querySelectorAll("tr").forEach(tr => {
                 idProduct = parseInt(tr.children[0].textContent);
-                console.log(idProduct);
+
                 if (idProduct === NewIdProduct)
                     trSelected = tr;
             })
@@ -687,8 +688,8 @@ require_once('db_connection.php');
             let idProduct = product.id;
             const total = product.selling_price * parseInt(quantity);
             const row = document.createElement('tr');
-            console.log(ifProductExistInFacture(idProduct));
             if (factureTbody.innerHTML.trim() === "" || ifProductExistInFacture(idProduct) === null) {
+                console.log('NOUVEAU PRODUIT');
                 row.innerHTML = `
                  <td style="display:none;">${product.id}</td>
                  <td>${product.name}</td>
@@ -698,9 +699,10 @@ require_once('db_connection.php');
                  `;
                 factureTbody.appendChild(row);
             } else {
-                console.log(idProduct);
+                console.log('PRODUIT EXISTE');
                 let productSelected = ifProductExistInFacture(idProduct);
-                console.log(productSelected);
+                selectedProduct = null;
+                barcodeProduct = null;
                 addQuantity(productSelected);
             }
 
@@ -710,7 +712,6 @@ require_once('db_connection.php');
         };
 
         function editQuantityProduct(selectedRow) {
-            console.log(selectedRow);
             const priceCell = selectedRow.children[2];
             const quantityCell = selectedRow.children[3];
             const totalCell = selectedRow.children[4];
@@ -718,7 +719,7 @@ require_once('db_connection.php');
             const oldQuantity = parseInt(quantityCell.textContent);
             const price = parseFloat(priceCell.textContent);
 
-            let currentQuantity = oldQuantity.toString();
+            currentQuantity = oldQuantity.toString();
             quantityDisplay.textContent = currentQuantity;
             keypadOverlay.classList.add('show');
 
@@ -778,10 +779,11 @@ require_once('db_connection.php');
                 return;
             }
 
-            const totalCell = selectedRow.children[3];
+            const totalCell = selectedRow.children[4];
             const oldTotal = parseFloat(totalCell.textContent);
 
             selectedRow.remove();
+
 
             totalGlobal = totalGlobal - oldTotal;
             factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
