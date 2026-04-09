@@ -1,10 +1,9 @@
-<?php 
-session_start(); 
-
-
+<?php
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +13,7 @@ session_start();
     <link rel="stylesheet" href="../css/stock.css">
 
 </head>
+
 <body>
     <header class="header">
         <div class="header-left">
@@ -170,13 +170,13 @@ session_start();
                             <td class="price-cell">525.00 DH</td>
                             <td>
                                 <div class="action-btns">
-                                    <button class="action-btn btn-view" >
+                                    <button class="action-btn btn-view">
                                         <i class="fas fa-eye"></i> Voir
                                     </button>
-                                    <button class="action-btn btn-edit" >
+                                    <button class="action-btn btn-edit">
                                         <i class="fas fa-edit"></i> Modifier
                                     </button>
-                                    <button class="action-btn btn-restock" >
+                                    <button class="action-btn btn-restock">
                                         <i class="fas fa-plus"></i> Réappro
                                     </button>
                                 </div>
@@ -195,13 +195,13 @@ session_start();
                             <td class="price-cell">270.00 DH</td>
                             <td>
                                 <div class="action-btns">
-                                    <button class="action-btn btn-view" >
+                                    <button class="action-btn btn-view">
                                         <i class="fas fa-eye"></i> Voir
                                     </button>
-                                    <button class="action-btn btn-edit" >
+                                    <button class="action-btn btn-edit">
                                         <i class="fas fa-edit"></i> Modifier
                                     </button>
-                                    <button class="action-btn btn-restock" >
+                                    <button class="action-btn btn-restock">
                                         <i class="fas fa-plus"></i> Réappro
                                     </button>
                                 </div>
@@ -220,13 +220,13 @@ session_start();
                             <td class="price-cell">43.20 DH</td>
                             <td>
                                 <div class="action-btns">
-                                    <button class="action-btn btn-view" >
+                                    <button class="action-btn btn-view">
                                         <i class="fas fa-eye"></i> Voir
                                     </button>
-                                    <button class="action-btn btn-edit" >
+                                    <button class="action-btn btn-edit">
                                         <i class="fas fa-edit"></i> Modifier
                                     </button>
-                                    <button class="action-btn btn-restock" >
+                                    <button class="action-btn btn-restock">
                                         <i class="fas fa-plus"></i> Réappro
                                     </button>
                                 </div>
@@ -245,13 +245,13 @@ session_start();
                             <td class="price-cell">0.00 DH</td>
                             <td>
                                 <div class="action-btns">
-                                    <button class="action-btn btn-view" >
+                                    <button class="action-btn btn-view">
                                         <i class="fas fa-eye"></i> Voir
                                     </button>
-                                    <button class="action-btn btn-edit" >
+                                    <button class="action-btn btn-edit">
                                         <i class="fas fa-edit"></i> Modifier
                                     </button>
-                                    <button class="action-btn btn-restock" >
+                                    <button class="action-btn btn-restock">
                                         <i class="fas fa-plus"></i> Réappro
                                     </button>
                                 </div>
@@ -270,13 +270,13 @@ session_start();
                             <td class="price-cell">467.50 DH</td>
                             <td>
                                 <div class="action-btns">
-                                    <button class="action-btn btn-view" >
+                                    <button class="action-btn btn-view">
                                         <i class="fas fa-eye"></i> Voir
                                     </button>
-                                    <button class="action-btn btn-edit" >
+                                    <button class="action-btn btn-edit">
                                         <i class="fas fa-edit"></i> Modifier
                                     </button>
-                                    <button class="action-btn btn-restock" >
+                                    <button class="action-btn btn-restock">
                                         <i class="fas fa-plus"></i> Réappro
                                     </button>
                                 </div>
@@ -291,4 +291,5 @@ session_start();
 
     <script src="../js/global-time.js"></script>
 </body>
+
 </html>

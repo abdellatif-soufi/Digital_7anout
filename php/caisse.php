@@ -11,10 +11,15 @@ require_once('db_connection.php');
     <title>Système de Point de Vente - Caisse</title>
     <script src="../js/frameWork/jquery-3.7.1.js"></script>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/caisse.css">
     <link rel="stylesheet" href="../css/global.css">
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
@@ -214,7 +219,7 @@ require_once('db_connection.php');
                     <h5 class="modal-title">
                         <i class="fas fa-file-invoice"></i> Facture de Vente
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">✕</button>
                 </div>
 
                 <!-- Body -->
@@ -315,36 +320,356 @@ require_once('db_connection.php');
 
 
 
-    <!-- <script src="../js/frameWork/bootstrap.js"></script> -->
     <script src="../js/global-time.js"></script>
     <script src="../js/frameWork/jquery-3.7.1.js"></script>
 
 
     <script>
+        //==========================
+        //Decliration of all IDs
+        //======================
+
+        // Keypad quantite
         const keypadOverlay = document.getElementById('keypadOverlay');
         const quantityDisplay = document.getElementById('quantityDisplay');
-        const addBtn = document.getElementById('addBtn');
-        const editBtn = document.getElementById('editBtn');
         const cancelBtn = document.getElementById('cancelBtn');
         const confirmBtn = document.getElementById('confirmBtn');
 
+        // Barcode keypad
+        const barcodeKeypadOverlay = document.getElementById('barcodeKeypadOverlay');
+        const barcodeDisplay = document.getElementById('barcodeDisplay');
+        const barcodeCancelBtn = document.getElementById('barcodeCancelBtn');
+        const barcodeConfirmBtn = document.getElementById('barcodeConfirmBtn');
+        const productCodeInput = document.querySelector('input[name="product_code"]');
+
+        // Boutons action
+        const addBtn = document.getElementById('addBtn');
+        const editBtn = document.getElementById('editBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const viderBtn = document.getElementById('viderBtn');
+
+        // Facture
+        const factureTbody = document.getElementById('factureTbody');
+        const factureTotal = document.querySelector('.total-amount');
+
+        // Navigation
+        const navHome = document.getElementById('navHome');
+        const navSep1 = document.getElementById('navSep1');
+        const navCategory = document.getElementById('navCategory');
+        const navCategoryName = document.getElementById('navCategoryName');
+        const navSep2 = document.getElementById('navSep2');
+        const navBrand = document.getElementById('navBrand');
+        const navBrandName = document.getElementById('navBrandName');
+        const backBtn = document.getElementById('navBackBtn');
+
+        // Grid
+        const dynamicGrid = document.getElementById('dynamicGrid');
+
+        // Modal
+        const invoiceModal = document.getElementById('invoiceModal');
+        const invoiceDate = document.getElementById('invoiceDate');
+        const invoiceProductsTable = document.getElementById('invoiceProductsTable');
+        const invoiceTotalAmount = document.getElementById('invoiceTotalAmount');
+        const finishSaleBtn = document.getElementById('finishSaleBtn');
+
+
+        //=============================
+        //Declaration for all variables
+        //=============================
+
         let currentQuantity = '0';
-        let barcodeProduct = null;
-        let rowToAddQuantity = null;
+        let currentAction = null; //add,edit,barcode
+        let currentRow = null;
+
+        let currentBarcode = '';
+
+        let selectedProduct = null;
+
+        let totalGlobal = 0;
+
+        let currentView = 'categories';
+        let selectedCategory = null;
+        let selectedBrand = null;
+        let categoriesData = [];
+        let brandsData = [];
+
+        //================================
+        //Initialisation of all functions
+        //================================
+
+
+        function showQuantityKeypad(quantity, action, row) {} //good
+
+        function hideQuantityKeypad() {} //good
+
+        function updateTotalDisplay() {} //good
+
+        function findProductInFacture(productId) {} //good
+
+        function addProductToFacture(product, quantity) {} //good
+
+        function updateProductQuantity(row, newQuantity) {} //good
+
+        function showCategories() {} //good
+
+        function showBrands(categoryId) {} //good
+
+        function showProducts(brandId) {} //good
+
+        function createCategoryCard(category) {} //good
+
+        function createBrandCard(brand) {} //good
+
+        function createProductCard(product) {} //good
+
+        function updateBreadcrumb() {} //
+
+
+        //===================
+        // The start of code 
+        //===================
+
+        function showQuantityKeypad(quantity, action, row) {
+            currentQuantity = quantity;
+            currentAction = action;
+            currentRow = row;
+            quantityDisplay.textContent = currentQuantity;
+            keypadOverlay.classList.add("show");
+        }
+
+        function hideQuantityKeypad() {
+            keypadOverlay.classList.remove("show");
+            currentQuantity = '0';
+            currentAction = null;
+            currentRow = null;
+        }
+
+        function updateTotalDisplay() {
+            factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
+        }
+
+        function findProductInFacture(productId) {
+            let foundRow = null;
+            factureTbody.querySelectorAll("tr").forEach(tr => {
+                if (productId === parseInt(tr.children[0].textContent)) {
+                    foundRow = tr;
+                }
+            })
+            return foundRow;
+        }
+
+        function addProductToFacture(product, quantity) {
+            let productFouder = findProductInFacture(product.id);
+            if (productFouder !== null) {
+                updateProductQuantity(productFouder, quantity)
+            } else {
+                let newProduct = document.createElement("tr");
+                let productTotal = parseInt(quantity) * parseFloat(product.selling_price);
+                newProduct.innerHTML = `
+                    <td style="display:none;">${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.selling_price.toFixed(2)}</td>
+                    <td>${quantity}</td>
+                    <td>${productTotal.toFixed(2)}</td>
+                `
+                totalGlobal += productTotal;
+                factureTbody.appendChild(newProduct);
+                updateTotalDisplay();
+            }
+        }
+
+        function updateProductQuantity(row, newQuantity) {
+            console.log(row);
+            console.log(newQuantity);
+            let productPrice = row.children[2].textContent;
+            let oldQuantity = row.children[3];
+            let oldProductTotal = row.children[4];
+
+            oldQuantity.textContent = newQuantity;
+            let NewProductTotal = parseInt(newQuantity) * parseFloat(productPrice);
+
+            totalGlobal = (totalGlobal - parseFloat(oldProductTotal.textContent)) + parseFloat(NewProductTotal);
+            updateTotalDisplay();
+
+            oldProductTotal.textContent = NewProductTotal.toFixed(2);
+        }
+
+        function showCategories() {
+            currentView = 'categories';
+            updateBreadcrumb();
+            dynamicGrid.innerHTML = '';
+
+            $.ajax({
+                method: "POST",
+                dataType: "json",
+                url: "./AJAX/categorie_ajax.php",
+                success: function(categories, textStatus, XHR) {
+                    // To put all categories in one table 
+                    categoriesData = categories;
+                    categories.forEach((category) => {
+                        dynamicGrid.appendChild(createCategoryCard(category));
+                    })
+                }
+            })
+        }
+
+        function showBrands(categoryId) {
+            selectedCategory = categoriesData.find(c => c.id == categoryId)
+            currentView = 'brands';
+            updateBreadcrumb();
+            dynamicGrid.innerHTML = '';
+
+            $.ajax({
+                method: "POST",
+                dataType: "json",
+                url: "./AJAX/brands_ajax.php",
+                data: {
+                    category_id: categoryId,
+                },
+                success: function(brands, textStatus, XHR) {
+                    brandsData = brands;
+                    brands.forEach((brand) => {
+                        dynamicGrid.appendChild(createBrandCard(brand));
+                    })
+                }
+            })
+        }
+
+
+        function showProducts(brandId) {
+            selectedBrand = brandsData.find(b => b.id == brandId)
+            currentView = 'brands';
+            updateBreadcrumb();
+            dynamicGrid.innerHTML = '';
+
+            $.ajax({
+                method: "POST",
+                dataType: "json",
+                url: "./AJAX/products_ajax.php",
+                data: {
+                    brand_id: brandId,
+                },
+                success: function(products, textStatus, XHR) {
+                    products.forEach((product) => {
+                        dynamicGrid.appendChild(createProductCard(product));
+                    })
+                }
+            })
+        }
+
+        function createCategoryCard(category) {
+            let card = document.createElement("div");
+            card.className = 'product-card category-card';
+            card.innerHTML = `
+                <div class="product-image">
+                    <img src="../categories-img/${category.image}" 
+                        alt="${category.name}" 
+                        onerror="this.style.display='none'">   
+                </div>
+                <div class="product-name">${category.name}</div>
+            `;
+            card.addEventListener('click', () => showBrands(category.id))
+            return card;
+        }
+
+        function createBrandCard(brand) {
+            let card = document.createElement("div");
+            card.className = 'product-card brand-card';
+            card.innerHTML = `
+                <div class="product-image">
+                    <img src="../brands-img/${brand.image}" 
+                        alt="${brand.name}" 
+                        onerror="this.style.display='none'">
+                </div>
+                <div class="product-name">${brand.name}</div>
+            `;
+            card.addEventListener('click', () => showProducts(brand.id));
+            return card;
+        }
+
+        function createProductCard(product) {
+            let card = document.createElement("div");
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="product-image">
+                    <img src="../products-img/${product.image}" 
+                        alt="${product.name}" 
+                        onerror="this.style.display='none'">
+                </div>
+                <div class="product-name">${product.name}</div>
+                <div class="product-price">${product.selling_price.toFixed(2)} DH</div>
+            `;
+
+            card.addEventListener('click', () => {
+                selectedProduct = product;
+                let productFouder = findProductInFacture(product.id);
+                console.log(productFouder);
+                if (productFouder !== null) {
+                    let ProductFouderQuantity = productFouder.children[3].textContent;
+                    showQuantityKeypad(ProductFouderQuantity, 'edit', productFouder);
+                } else {
+                    showQuantityKeypad('1', 'add');
+                }
+            })
+            return card;
+        }
+
+
+        function updateBreadcrumb() {
+            [navSep1, navCategory, navSep2, navBrand].forEach(el => el.style.display = 'none');
+            backBtn.style.display = 'none';
+
+            if (currentView === 'brands') {
+                navSep1.style.display = 'inline';
+                navCategory.style.display = 'inline';
+                navCategoryName.textContent = selectedCategory.name;
+                backBtn.style.display = 'inline-block';
+            } else if (currentView === 'products') {
+                navSep1.style.display = 'inline';
+                navCategory.style.display = 'inline';
+                navCategoryName.textContent = selectedCategory.name;
+                navSep2.style.display = 'inline';
+                navBrand.style.display = 'inline';
+                navBrandName.textContent = selectedBrand.name;
+                backBtn.style.display = 'inline-block';
+            }
+        }
+
+
+        //==================================
+        // Buttons and EventListener
+        //==================================
+
+        confirmBtn.addEventListener('click', () => {
+            let qte = parseInt(currentQuantity);
+
+            if (isNaN(qte) || qte <= 0) {
+                alert("❗ Impossible d'entrer une quantité inférieure ou égale à 0");
+                return;
+            }
+
+            if (currentAction == 'add') {
+                addProductToFacture(selectedProduct, qte);
+            } else if (currentAction == 'edit') {
+                updateProductQuantity(currentRow, qte)
+            } else if (currentAction == 'barcode') {
+                addProductToFacture(selectedProduct, qte);
+            }
+
+            hideQuantityKeypad();
+        })
 
         addBtn.addEventListener('click', () => {
-            currentQuantity = '0';
-            quantityDisplay.textContent = currentQuantity;
+            currentBarcode = '';
+            barcodeDisplay.textContent = '';
             barcodeKeypadOverlay.classList.add('show');
         });
 
-        cancelBtn.addEventListener('click', () => {
-            keypadOverlay.classList.remove('show');
-        });
+        cancelBtn.addEventListener('click', hideQuantityKeypad);
 
         keypadOverlay.addEventListener('click', (e) => {
             if (e.target === keypadOverlay) {
-                keypadOverlay.classList.remove('show');
+                hideQuantityKeypad();
             }
         });
 
@@ -367,14 +692,6 @@ require_once('db_connection.php');
                 }
             });
         });
-
-        const barcodeKeypadOverlay = document.getElementById('barcodeKeypadOverlay');
-        const barcodeDisplay = document.getElementById('barcodeDisplay');
-        const barcodeCancelBtn = document.getElementById('barcodeCancelBtn');
-        const barcodeConfirmBtn = document.getElementById('barcodeConfirmBtn');
-        const productCodeInput = document.querySelector('input[name="product_code"]');
-
-        let currentBarcode = '';
 
         productCodeInput.addEventListener('click', () => {
             currentBarcode = productCodeInput.value || '';
@@ -409,8 +726,14 @@ require_once('db_connection.php');
         });
 
         barcodeConfirmBtn.addEventListener('click', () => {
+            if (!currentBarcode) {
+                alert("Veuillez entrer un code produit");
+                return;
+            }
+
             productCodeInput.value = currentBarcode;
             barcodeKeypadOverlay.classList.remove('show');
+
             $.ajax({
                 method: "POST",
                 url: "./AJAX/product_code_ajax.php",
@@ -419,354 +742,171 @@ require_once('db_connection.php');
                     barcode: currentBarcode
                 },
                 success: function(product) {
-                    barcodeProduct = product;
-                    currentQuantity = '1';
-                    quantityDisplay.textContent = currentQuantity;
-                    keypadOverlay.classList.add('show');
+                    if (product && product.id) {
+                        selectedProduct = product;
+                        showQuantityKeypad('1', 'barcode');
+                    } else {
+                        alert("Produit introuvable avec ce code");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erreur AJAX:", error);
+                    alert("Erreur lors de la recherche du produit");
                 }
             });
         });
 
-        let currentView = 'categories';
-        let selectedCategory = null;
-        let selectedBrand = null;
-        let categoriesData = [];
-        let brandsData = [];
 
-        function showCategories() {
-            currentView = 'categories';
-            updateBreadcrumb();
-            const grid = document.getElementById('dynamicGrid');
-            grid.innerHTML = '';
-            $.ajax({
-                method: "POST",
-                url: "./AJAX/categorie_ajax.php",
-                dataType: "json",
-                success: function(categories) {
-                    categoriesData = categories;
-                    categories.forEach(category => {
-                        const categoryCard = createCategoryCard(category);
-                        grid.appendChild(categoryCard);
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.log("Error : ", error);
-                }
-            });
-        }
-
-        function showBrands(categoryId) {
-            currentView = 'brands';
-            selectedCategory = categoriesData.find(c => c.id == categoryId);
-            updateBreadcrumb();
-            const grid = document.getElementById('dynamicGrid');
-            grid.innerHTML = '';
-            $.ajax({
-                method: "POST",
-                url: "./AJAX/brands_ajax.php",
-                data: {
-                    category_id: categoryId
-                },
-                dataType: "json",
-                success: function(brands) {
-                    console.log(brands);
-                    brandsData = brands;
-                    brands.forEach(brand => {
-                        const brandCard = createBrandCard(brand);
-                        grid.appendChild(brandCard);
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.log("Error: ", error);
-                    console.log("Response: ", xhr.responseText);
-                }
-            });
-        }
-
-        function showProducts(brandId) {
-            currentView = 'products';
-            selectedBrand = brandsData.find(b => b.id == brandId);
-            updateBreadcrumb();
-            const grid = document.getElementById('dynamicGrid');
-            grid.innerHTML = '';
-            $.ajax({
-                method: "POST",
-                url: "./AJAX/products_ajax.php",
-                data: {
-                    brand_id: brandId
-                },
-                dataType: "json",
-                success: function(products) {
-                    products.forEach(product => {
-                        const productCard = createProductCard(product);
-                        grid.appendChild(productCard);
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.log("Error: ", error);
-                    console.log("Response: ", xhr.responseText);
-                }
-            });
-        }
-
-        function createCategoryCard(category) {
-            const card = document.createElement('div');
-            card.className = 'product-card category-card';
-            card.innerHTML = `
-                <div class="product-image">
-                    <img src="../categories-img/${category.image}" alt="${category.name}" onerror="this.style.display='none'">
-                </div>
-                <div class="product-name">${category.name}</div>
-            `;
-            card.addEventListener('click', () => showBrands(category.id));
-            return card;
-        }
-
-        function createBrandCard(brand) {
-            const card = document.createElement('div');
-            card.className = 'product-card brand-card';
-            card.innerHTML = `
-                <div class="product-image">
-                    <img src="../imgs/brands-img/${brand.name.toLowerCase()}.png" alt="${brand.name}" onerror="this.style.display='none'">
-                </div>
-                <div class="product-name">${brand.name}</div>
-            `;
-            card.addEventListener('click', () => showProducts(brand.id));
-            return card;
-        }
-
-        let selectedProduct = null;
-
-        function createProductCard(product) {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
-                <div class="product-image">
-                    <img src="../products-img/${product.image}" alt="${product.name}" onerror="this.style.display='none'">
-                </div>
-                <div class="product-name">${product.name}</div>
-                <div class="product-price">${product.selling_price} DH</div>
-            `;
-            card.addEventListener('click', () => {
-                console.log('Produit selectionne:', product);
-                selectedProduct = product;
-                currentQuantity = '1';
-                document.getElementById('quantityDisplay').textContent = currentQuantity;
-                document.getElementById('keypadOverlay').classList.add('show');
-            });
-            return card;
-        }
-
-        confirmBtn.addEventListener('click', () => {
-            console.log('selectedProduct:', selectedProduct);
-            console.log('barcodeProduct:', barcodeProduct);
-            console.log('rowToAddQuantity:', rowToAddQuantity);
-            if (selectedProduct) {
-                let quantity = document.getElementById('quantityDisplay');
-                const qte = parseInt(quantity.textContent);
-                if (isNaN(qte) || qte <= 0) {
-                    alert("Imposible d'ajouter un produit avec une quantite 0");
-                    return;
-                }
-                addProductToFacture(selectedProduct, quantity.textContent);
-                keypadOverlay.classList.remove('show');
-                selectedProduct = null;
-            } else if (barcodeProduct) {
-                let quantity = document.getElementById('quantityDisplay');
-                const qte = parseInt(quantity.textContent);
-                if (isNaN(qte) || qte <= 0) {
-                    alert("Imposible d'ajouter un produit avec une quantite 0");
-                    return;
-                }
-                addProductToFacture(barcodeProduct, quantity.textContent);
-                keypadOverlay.classList.remove('show');
-                barcodeProduct = null;
-            } else if (rowToAddQuantity) {
-                console.log("rowToAddQuantity");
-                const priceCell = rowToAddQuantity.children[2];
-                const quantityCell = rowToAddQuantity.children[3];
-                const totalCell = rowToAddQuantity.children[4];
-                const oldQuantity = parseInt(quantityCell.textContent);
-                const price = parseFloat(priceCell.textContent);
-                let newQuantity = parseInt(quantityDisplay.textContent) + oldQuantity;
-                quantityCell.textContent = newQuantity.toString();
-                console.log('price:', priceCell.textContent);
-                console.log('quantity:', quantityCell.textContent);
-                console.log('total:', totalCell.textContent);
-                let oldTotalCell = parseInt(totalCell.textContent);
-                let newTotalCell = price * newQuantity;
-                totalCell.textContent = newTotalCell.toFixed(2);
-                keypadOverlay.classList.remove('show');
-                rowToAddQuantity = null;
+        // Selection for a product in facture (one click)
+        factureTbody.addEventListener('click', (e) => {
+            const row = e.target.closest('tr');
+            if (row) {
+                factureTbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
+                row.classList.add('selected');
             }
         });
 
-        const factureTbody = document.getElementById('factureTbody');
-        const factureTotal = document.querySelector('.total-amount');
-        let totalGlobal = 0;
-
-        function addQuantity(product) {
-            rowToAddQuantity = product;
-            selectedProduct = null;
-            barcodeProduct = null;
-            currentQuantity = '1';
-            quantityDisplay.textContent = currentQuantity;
-            keypadOverlay.classList.add("show");
-        }
-
-        function ifProductExistInFacture(NewIdProduct) {
-            let trSelected = null;
-            let idProduct;
-            factureTbody.querySelectorAll("tr").forEach(tr => {
-                idProduct = parseInt(tr.children[0].textContent);
-                if (idProduct === NewIdProduct) trSelected = tr;
-            });
-            return trSelected;
-        }
-
-        function addProductToFacture(product, quantity) {
-            let idProduct = product.id;
-            const total = product.selling_price * parseInt(quantity);
-            const row = document.createElement('tr');
-            if (factureTbody.innerHTML.trim() === "" || ifProductExistInFacture(idProduct) === null) {
-                console.log('NOUVEAU PRODUIT');
-                row.innerHTML = `
-                    <td style="display:none;">${product.id}</td>
-                    <td>${product.name}</td>
-                    <td>${parseFloat(product.selling_price).toFixed(2)}</td>
-                    <td>${quantity}</td>
-                    <td>${total.toFixed(2)}</td>
-                `;
-                factureTbody.appendChild(row);
-            } else {
-                console.log('PRODUIT EXISTE');
-                let productSelected = ifProductExistInFacture(idProduct);
-                selectedProduct = null;
-                barcodeProduct = null;
-                addQuantity(productSelected);
+        // Désélectionner une ligne (double-clic)
+        factureTbody.addEventListener('dblclick', (e) => {
+            const row = e.target.closest('tr');
+            if (row) {
+                row.classList.remove('selected');
             }
-            totalGlobal += total;
-            if (factureTotal) factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
-        }
+        });
 
-        function editQuantityProduct(selectedRow) {
-            const priceCell = selectedRow.children[2];
-            const quantityCell = selectedRow.children[3];
-            const totalCell = selectedRow.children[4];
-            const oldQuantity = parseInt(quantityCell.textContent);
-            const price = parseFloat(priceCell.textContent);
-            currentQuantity = oldQuantity.toString();
-            quantityDisplay.textContent = currentQuantity;
-            keypadOverlay.classList.add('show');
-            confirmBtn.addEventListener('click', () => {
-                if (parseInt(currentQuantity) <= 0 || isNaN(parseInt(currentQuantity))) {
-                    alert("Imposible d'entrer une quantite inferieure a 0.");
-                    return;
-                }
-                let newQuantity = quantityDisplay.textContent;
-                quantityCell.textContent = newQuantity;
-                let oldTotalCell = parseInt(totalCell.textContent);
-                let newTotalCell = price * parseInt(newQuantity);
-                totalCell.textContent = newTotalCell.toFixed(2);
-                keypadOverlay.classList.remove('show');
-                totalGlobal = totalGlobal - oldTotalCell + newTotalCell;
-                factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
-                selectedRow = null;
-            });
-        }
 
         editBtn.addEventListener('click', () => {
             const selectedRow = factureTbody.querySelector('tr.selected');
             if (!selectedRow) {
-                alert("Veuillez selectionner une ligne a modifier !");
+                alert("❗ Veuillez sélectionner une ligne à modifier");
                 return;
             }
-            editQuantityProduct(selectedRow);
-        });
 
-        factureTbody.addEventListener('click', (e) => {
-            if (e.target.closest('tr')) {
-                const selectedRow = e.target.closest('tr');
-                if (!selectedRow) return;
-                factureTbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
-                selectedRow.classList.add('selected');
-            }
-        });
-
-        factureTbody.addEventListener('dblclick', (e) => {
-            if (e.target.closest('tr')) {
-                const selectedRow = e.target.closest('tr');
-                selectedRow.classList.remove('selected');
-            }
+            const currentQty = selectedRow.children[3].textContent;
+            showQuantityKeypad(currentQty, 'edit', selectedRow);
         });
 
         deleteBtn.addEventListener('click', () => {
-            let selectedRow = factureTbody.querySelector('tr.selected');
+            const selectedRow = factureTbody.querySelector('tr.selected');
             if (!selectedRow) {
-                alert("Veuillez selectionner une ligne a supprimer !");
+                alert("❗ Veuillez sélectionner une ligne à supprimer");
                 return;
             }
+
             const totalCell = selectedRow.children[4];
-            const oldTotal = parseFloat(totalCell.textContent);
+            const rowTotal = parseFloat(totalCell.textContent);
+
             selectedRow.remove();
-            totalGlobal = totalGlobal - oldTotal;
-            factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
-            console.log("Produit supprime avec succes");
+
+            totalGlobal -= rowTotal;
+            updateTotalDisplay();
+
+            console.log("✅ Produit supprimé");
         });
 
         viderBtn.addEventListener('click', () => {
             if (factureTbody.children.length === 0) {
-                alert("La facture est deja vide !");
+                alert("❗ La facture est déjà vide");
                 return;
             }
-            const confirmation = confirm("Etes-vous sur de vouloir vider toute la facture ?");
+
+            const confirmation = confirm("🗑️ Êtes-vous sûr de vouloir vider toute la facture ?");
             if (!confirmation) return;
+
             factureTbody.innerHTML = '';
             totalGlobal = 0;
-            factureTotal.textContent = totalGlobal.toFixed(2) + " DH";
-            console.log("Facture videe avec succes");
+            updateTotalDisplay();
+
+            console.log("✅ Facture vidée");
         });
 
-        function updateBreadcrumb() {
-            const navHome = document.getElementById('navHome');
-            const navSep1 = document.getElementById('navSep1');
-            const navCategory = document.getElementById('navCategory');
-            const navCategoryName = document.getElementById('navCategoryName');
-            const navSep2 = document.getElementById('navSep2');
-            const navBrand = document.getElementById('navBrand');
-            const navBrandName = document.getElementById('navBrandName');
-            const backBtn = document.getElementById('navBackBtn');
 
-            [navSep1, navCategory, navSep2, navBrand, backBtn].forEach(el => el.style.display = 'none');
-
-            if (currentView === 'categories') {
-                backBtn.style.display = 'none';
-            } else if (currentView === 'brands') {
-                navSep1.style.display = 'inline';
-                navCategory.style.display = 'inline';
-                navCategoryName.textContent = selectedCategory.name;
-                backBtn.style.display = 'inline-block';
-            } else if (currentView === 'products') {
-                navSep1.style.display = 'inline';
-                navCategory.style.display = 'inline';
-                navCategoryName.textContent = selectedCategory.name;
-                navSep2.style.display = 'inline';
-                navBrand.style.display = 'inline';
-                navBrandName.textContent = selectedBrand.name;
-                backBtn.style.display = 'inline-block';
-            }
-        }
-
-        document.getElementById('navHome').addEventListener('click', showCategories);
-        document.getElementById('navCategory').addEventListener('click', () => {
+        navHome.addEventListener('click', showCategories);
+        navCategory.addEventListener('click', () => {
             if (selectedCategory) showBrands(selectedCategory.id);
         });
-        document.getElementById('navBackBtn').addEventListener('click', () => {
-            if (currentView === 'brands') showCategories();
-            else if (currentView === 'products') showBrands(selectedCategory.id);
+        backBtn.addEventListener('click', () => {
+            if (currentView === 'brands') {
+                showCategories();
+            } else if (currentView === 'products') {
+                showBrands(selectedCategory.id);
+            }
         });
 
-        document.addEventListener('DOMContentLoaded', showCategories);
+
+
+
+        // ✅ فتح الـ modal مع أنيميشن
+        function openInvoiceModal() {
+            invoiceModal.style.display = 'flex';
+            invoiceModal.classList.add('show');
+        }
+
+        // ✅ إغلاق الـ modal مع أنيميشن
+        function closeInvoiceModal() {
+            invoiceModal.classList.remove('show');
+            invoiceModal.style.display = 'none';
+        }
+
+        // ✅ زر إتمام البيع
+        const btnComplete = document.querySelector('.btn-complete');
+        if (btnComplete) {
+            btnComplete.addEventListener('click', () => {
+                if (factureTbody.children.length === 0) {
+                    alert("❗ La facture est vide ! Veuillez ajouter des produits.");
+                    return;
+                }
+
+                // تحديث التاريخ
+                const now = new Date();
+                invoiceDate.textContent =
+                    now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR');
+
+                // ملء جدول الفاتورة
+                const invoiceTable = document.getElementById('invoiceProductsTable');
+                invoiceTable.innerHTML = '';
+                factureTbody.querySelectorAll('tr').forEach(row => {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = row.innerHTML;
+                    newRow.classList.remove('selected');
+                    invoiceTable.appendChild(newRow);
+                });
+
+                document.getElementById('invoiceTotalAmount').textContent = totalGlobal.toFixed(2);
+
+                openInvoiceModal();
+            });
+        }
+
+        // ✅ إغلاق بزر X
+        const closeModalBtn = invoiceModal?.querySelector('.btn-close');
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', closeInvoiceModal);
+        }
+
+        // ✅ إغلاق بالضغط خارج الـ modal
+        if (invoiceModal) {
+            invoiceModal.addEventListener('click', (e) => {
+                if (e.target === invoiceModal) closeInvoiceModal();
+            });
+        }
+
+        const finishSaleBtnEl = document.getElementById('finishSaleBtn');
+        if (finishSaleBtnEl) {
+            finishSaleBtnEl.addEventListener('click', () => {
+                factureTbody.innerHTML = '';
+                totalGlobal = 0;
+                updateTotalDisplay();
+                closeInvoiceModal();
+                alert("✅ Vente terminée avec succès !");
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showCategories();
+            console.log("✅ Système POS initialisé");
+        });
     </script>
 
 </body>

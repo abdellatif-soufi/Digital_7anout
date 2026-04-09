@@ -1,6 +1,14 @@
+   html,
+body {
+    height: auto !important;
+    overflow: auto !important;
+    overflow-x: hidden !important;
+}
+ 
+/* Container — scrollable, full width */
 .container {
-  max-width: 1400px;
-  margin-top: 20px;
+    max-width: 100%;
+    padding: 10px;
 }
 
 h2 {

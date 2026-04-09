@@ -685,6 +685,37 @@
               transition: all 0s ease;
         }
 
+        /* Invoice Modal Overlay */
+        #invoiceModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;           /* hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1055;
+            backdrop-filter: blur(5px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        /* Center the modal dialog */
+        #invoiceModal .modal-dialog {
+            margin: auto;
+            width: 100%;
+            max-width: 700px;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        /* Animation when shown */
+        #invoiceModal.show .modal-dialog {
+            transform: scale(1);
+        }
+
 
         /* Floating Animation */
         @keyframes float {
@@ -838,3 +869,112 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        #invoiceModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1055;
+    backdrop-filter: blur(5px);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#invoiceModal.show {
+    display: flex;
+}
+
+#invoiceModal .modal-dialog {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    transform: scale(0.85);
+    transition: transform 0.3s ease;
+}
+
+#invoiceModal.show .modal-dialog {
+    transform: scale(1);
+}
+
+#invoiceModal .modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    background: white;
+}
+
+#invoiceModal .modal-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#invoiceModal .modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+#invoiceModal .btn-close {
+    background: rgba(255,255,255,0.3);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#invoiceModal .btn-close:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+#invoiceModal .modal-body {
+    padding: 20px;
+    background: white;
+}
+
+#invoiceModal .modal-footer {
+    padding: 15px;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid #dee2e6;
+}
+
+/* In your caisse.css */
+#invoiceModal .modal-dialog {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#invoiceModal .modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+#invoiceModal .modal-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+#invoiceModal .table-responsive {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
