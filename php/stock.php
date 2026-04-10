@@ -42,7 +42,22 @@ session_start();
                 </div>
                 <div class="stat-card-title">Total Produits</div>
                 <div class="stat-card-value">1,247</div>
-                <div class="stat-card-subtitle">Articles en stock</div>
+            </div>
+
+            <div class="stat-card stat-card-primary">
+                <div class="stat-card-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div class="stat-card-title">Profit<br>Aujourd’hui</div>
+                <div class="stat-card-value">150 DH</div>
+            </div>
+
+            <div class="stat-card stat-card-primary">
+                <div class="stat-card-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div class="stat-card-title">Profit Mensuel</div>
+                <div class="stat-card-value">5455 DH</div>
             </div>
 
             <div class="stat-card stat-card-info">
@@ -51,7 +66,6 @@ session_start();
                 </div>
                 <div class="stat-card-title">Valeur Inventaire</div>
                 <div class="stat-card-value">145,870 DH</div>
-                <div class="stat-card-subtitle">Valeur totale</div>
             </div>
 
             <div class="stat-card stat-card-warning">
@@ -60,7 +74,6 @@ session_start();
                 </div>
                 <div class="stat-card-title">Stock Bas</div>
                 <div class="stat-card-value">23</div>
-                <div class="stat-card-subtitle">Articles à réapprovisionner</div>
             </div>
 
             <div class="stat-card stat-card-danger">
@@ -69,7 +82,6 @@ session_start();
                 </div>
                 <div class="stat-card-title">Rupture Stock</div>
                 <div class="stat-card-value">5</div>
-                <div class="stat-card-subtitle">Articles épuisés</div>
             </div>
         </div>
 
@@ -149,7 +161,7 @@ session_start();
                             <th style="width: 10%;">Marque</th>
                             <th style="width: 8%;">Prix Achat</th>
                             <th style="width: 8%;">Prix Vente</th>
-                            <th style="width: 8%;">Stock</th>
+                            <th style="width: 5%;">Stock</th>
                             <th style="width: 10%;">État</th>
                             <th style="width: 10%;">Valeur</th>
                             <th style="width: 16%;">Actions</th>
@@ -171,13 +183,13 @@ session_start();
                             <td>
                                 <div class="action-btns">
                                     <button class="action-btn btn-view">
-                                        <i class="fas fa-eye"></i> Voir
+                                        <i class="fas fa-eye"></i>
                                     </button>
                                     <button class="action-btn btn-edit">
-                                        <i class="fas fa-edit"></i> Modifier
+                                        <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="action-btn btn-restock">
-                                        <i class="fas fa-plus"></i> Réappro
+                                        <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
                             </td>
@@ -196,13 +208,13 @@ session_start();
                             <td>
                                 <div class="action-btns">
                                     <button class="action-btn btn-view">
-                                        <i class="fas fa-eye"></i> Voir
+                                        <i class="fas fa-eye"></i>
                                     </button>
                                     <button class="action-btn btn-edit">
-                                        <i class="fas fa-edit"></i> Modifier
+                                        <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="action-btn btn-restock">
-                                        <i class="fas fa-plus"></i> Réappro
+                                        <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
                             </td>
@@ -221,13 +233,13 @@ session_start();
                             <td>
                                 <div class="action-btns">
                                     <button class="action-btn btn-view">
-                                        <i class="fas fa-eye"></i> Voir
+                                        <i class="fas fa-eye"></i>
                                     </button>
                                     <button class="action-btn btn-edit">
-                                        <i class="fas fa-edit"></i> Modifier
+                                        <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="action-btn btn-restock">
-                                        <i class="fas fa-plus"></i> Réappro
+                                        <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
                             </td>
@@ -246,13 +258,13 @@ session_start();
                             <td>
                                 <div class="action-btns">
                                     <button class="action-btn btn-view">
-                                        <i class="fas fa-eye"></i> Voir
+                                        <i class="fas fa-eye"></i>
                                     </button>
                                     <button class="action-btn btn-edit">
-                                        <i class="fas fa-edit"></i> Modifier
+                                        <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="action-btn btn-restock">
-                                        <i class="fas fa-plus"></i> Réappro
+                                        <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
                             </td>
@@ -271,13 +283,13 @@ session_start();
                             <td>
                                 <div class="action-btns">
                                     <button class="action-btn btn-view">
-                                        <i class="fas fa-eye"></i> Voir
+                                        <i class="fas fa-eye"></i>
                                     </button>
                                     <button class="action-btn btn-edit">
-                                        <i class="fas fa-edit"></i> Modifier
+                                        <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="action-btn btn-restock">
-                                        <i class="fas fa-plus"></i> Réappro
+                                        <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
                             </td>
@@ -285,6 +297,48 @@ session_start();
                         <!-- Add more rows as needed -->
                     </tbody>
                 </table>
+            </div>
+
+
+            <div class="pagination-section">
+                <div class="pagination-info">
+                    <i class="fas fa-info-circle"></i> Affichage de 1 à 8 sur 328 paiements
+                </div>
+                <nav>
+                    <ul class="pagination mb-0">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item active">
+                            <a class="page-link" href="#">1</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">2</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">3</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">4</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">5</a>
+                        </li>
+                        <li class="page-item">
+                            <span class="page-link">...</span>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">41</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>

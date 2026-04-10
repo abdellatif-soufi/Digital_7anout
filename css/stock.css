@@ -34,7 +34,7 @@
 /* Stats Section */
 .stats-section {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
     gap: 8px;
     margin-bottom: 8px;
     flex-shrink: 0;
@@ -331,3 +331,48 @@ tbody tr:hover { background-color: rgba(40, 167, 69, 0.05); }
 
 /* Price */
 .price-cell { font-weight: 700; color: var(--primary-color); }
+
+
+/* Pagination */
+.pagination-section {
+    background: var(--white);
+    padding: 7px 15px;
+    border-top: 2px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.pagination-info {
+    font-size: 0.75rem;
+    color: var(--dark-color);
+    font-weight: 600;
+}
+
+.pagination .page-link {
+    color: var(--dark-color);
+    border: 2px solid #e9ecef;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.pagination .page-link:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-color: var(--primary-color);
+}
+
+.pagination{
+display: flex;
+    align-items: center;
+    list-style: none;
+}

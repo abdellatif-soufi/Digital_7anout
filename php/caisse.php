@@ -245,7 +245,7 @@ require_once('db_connection.php');
                         <tbody id="invoiceProductsTable"></tbody>
                         <tfoot>
                             <tr style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
-                                <td colspan="3" class="text-end fw-bold">TOTAL :</td>
+                                <td colspan="2" class="text-end fw-bold">TOTAL :</td>
                                 <td class="text-center fw-bold"><span id="invoiceTotalAmount"></span> DH</td>
                             </tr>
                         </tfoot>

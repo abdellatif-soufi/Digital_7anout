@@ -43,7 +43,6 @@ h2::after {
 
 .card:hover {
   box-shadow: var(--shadow-hover);
-  transform: translateY(-2px);
 }
 
 .card-header-custom {
@@ -225,17 +224,7 @@ h2::after {
   background-color: rgba(198, 225, 255, 0.3);
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+
 
 .card {
   animation: fadeIn 0.5s ease-out;

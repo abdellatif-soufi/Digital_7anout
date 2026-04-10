@@ -978,3 +978,46 @@
     overflow-y: auto;
     min-height: 0;
 }
+
+/* الجدول */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* thead يبقى ثابت */
+thead {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* tbody قابل للـ scroll */
+tbody#factureTbody {
+    display: block;
+    max-height: 300px; /* غير الارتفاع حسب ما بغيتي */
+    overflow-y: auto;
+    width: 100%;
+}
+
+/* صفوف tbody يتصافو مع thead */
+tbody#factureTbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+tbody#invoiceProductsTable {
+    display: block;
+    max-height: 100px; /* غير الارتفاع حسب ما بغيتي */
+    overflow-y: auto;
+    width: 100%;
+}
+
+/* صفوف tbody يتصافو مع thead */
+tbody#invoiceProductsTable tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+

@@ -53,15 +53,6 @@ editBtn.forEach(btn =>{
 editBtn.forEach(btn =>{
     btn.addEventListener('dblclick',()=>{
         let tr = btn.closest('.product');
-        let id = tr.children[0].textContent.trim();
-        let name = tr.children[1].textContent.trim();
-        let image =  tr.children[2].querySelector('.product-image').getAttribute('src');
-        let purPrice = tr.children[3].textContent.trim();
-        let sellPrice = tr.children[4].textContent.trim();
-        let stock = tr.children[4].textContent.trim();
-        let barcode = tr.children[5].textContent.trim();
-        let brand = btn.dataset.brand;
-        let category = btn.dataset.category;
 
         productId.value = '';
         productName.value = '';
